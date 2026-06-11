@@ -17,6 +17,13 @@
       justify-content: center;
       min-height: 100vh;
       gap: 32px;
+      transition: background 0.4s, color 0.4s;
+    }
+
+    /* Modo día */
+    body.light {
+      background: #f5f5f0;
+      color: #222;
     }
 
     h1 {
@@ -26,6 +33,26 @@
       color: #888;
       font-weight: 400;
     }
+    body.light h1 { color: #aaa; }
+
+    /* Botón tema */
+    #theme-btn {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: #1a1a22;
+      border: none;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      font-size: 1.1rem;
+      cursor: pointer;
+      transition: background 0.3s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    body.light #theme-btn { background: #e0e0d8; }
 
     /* Mode tabs */
     .modes {
@@ -34,7 +61,10 @@
       background: #1a1a22;
       padding: 4px;
       border-radius: 12px;
+      transition: background 0.4s;
     }
+    body.light .modes { background: #e0e0d8; }
+
     .mode-btn {
       background: none;
       border: none;
@@ -50,6 +80,7 @@
       background: #2a2a38;
       color: #c0a8ff;
     }
+    body.light .mode-btn.active { background: #fff; }
     .mode-btn:hover:not(.active) { color: #aaa; }
 
     /* Ring */
@@ -63,7 +94,8 @@
       width: 240px;
       height: 240px;
     }
-    .ring-bg { fill: none; stroke: #1e1e2a; stroke-width: 10; }
+    .ring-bg { fill: none; stroke: #1e1e2a; stroke-width: 10; transition: stroke 0.4s; }
+    body.light .ring-bg { stroke: #ddddd5; }
     .ring-progress {
       fill: none;
       stroke: #c0a8ff;
@@ -113,8 +145,11 @@
       background: #1e1e2a;
       color: #666;
       font-size: 1rem;
+      transition: background 0.4s, color 0.15s;
     }
+    body.light #reset-btn { background: #e0e0d8; }
     #reset-btn:hover { background: #2a2a38; color: #aaa; }
+    body.light #reset-btn:hover { background: #ccccc4; }
 
     /* Session dots */
     .sessions {
@@ -129,6 +164,7 @@
       letter-spacing: 0.15em;
       text-transform: uppercase;
     }
+    body.light .session-label { color: #aaa; }
     .dots {
       display: flex;
       gap: 8px;
@@ -140,6 +176,7 @@
       border: 1.5px solid #2a2a38;
       transition: all 0.3s;
     }
+    body.light .dot { background: #ddddd5; border-color: #ccccc4; }
     .dot.done {
       background: #c0a8ff;
       border-color: #c0a8ff;
@@ -162,6 +199,7 @@
       transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
       pointer-events: none;
     }
+    body.light #toast { background: #fff; box-shadow: 0 4px 20px #0002; }
     #toast.show {
       opacity: 1;
       transform: translateX(-50%) translateY(0);
@@ -169,6 +207,8 @@
   </style>
 </head>
 <body>
+
+  <button id="theme-btn" title="Cambiar tema" aria-label="Cambiar entre modo día y noche">🌙</button>
 
   <h1>Focus Timer</h1>
 
@@ -215,6 +255,7 @@
     const resetBtn = document.getElementById('reset-btn');
     const dots = document.querySelectorAll('.dot');
     const toastEl = document.getElementById('toast');
+    const themeBtn = document.getElementById('theme-btn');
 
     ring.style.strokeDasharray = CIRCUMFERENCE;
     ring.style.strokeDashoffset = 0;
@@ -225,12 +266,19 @@
     let interval = null;
     let sessions = 0;
     let currentPhase = 'FOCO';
+    let isLight = false;
 
     const phaseColors = {
       'FOCO': '#c0a8ff',
       'DESCANSO': '#a8e6cf',
       'PAUSA LARGA': '#ffd6a5',
     };
+
+    themeBtn.addEventListener('click', () => {
+      isLight = !isLight;
+      document.body.classList.toggle('light', isLight);
+      themeBtn.textContent = isLight ? '🌙' : '☀️';
+    });
 
     function formatTime(s) {
       const m = Math.floor(s / 60).toString().padStart(2, '0');
